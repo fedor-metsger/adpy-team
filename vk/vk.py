@@ -3,7 +3,7 @@ import requests
 
 VK_TOKEN_FILENAME = "vk_token.txt"
 
-class VKException(Exception)
+class VKException(Exception):
     """
     Класс для ошибок, возникающих при доступе к VK
     """
@@ -83,10 +83,31 @@ class VKConnector:
             "fields":"education,sex,bdate,city"
         }
         response = requests.get(url, params={**self.params, **params})
-        if response.code != 200:
+        if response.status_code != 200:
             raise(VKException(f'get_user_info: Ошибка при запросе фото'))
         return response.json()
 
+
+    def get_user(self, id: str) -> VKUser:
+        ud = self.get_user_info(id)
+        photos = sorted(self.get_user_photos(id), key=lambda p: int(p["likes"]), reverse=True)[:3]
+
+        return VKUser(ud["response"][0]["id"],
+                      ud["response"][0]["first_name"] + ' ' + ud["response"][0]["last_name"],
+                      ud["response"][0]["bdate"], ud["response"][0]["sex"],
+                      ud["response"][0]["city"]["title"], photos)
+
+    def _is_img_type_better(self, type1, type2):
+        """
+        Сравнивает типы аватарок. Нужно для того, чтобы выбрать бОльшую по размеру.
+        Связано с тем, что иногда VK не возвращает размер фото, и нужно смотреть на тип
+        :return:
+        """
+        types = ['s', 'm', 'o', 'p', 'q', 'r', 'x', 'y', 'z', 'w']
+
+        if type1 in types and type2 in types and types.index(type1) > types.index(type2):
+            return False
+        return True
 
     def get_user_photos(self, id: str, offset=0, number=1000):
         """
@@ -125,3 +146,6 @@ def main():
     vk = VKConnector()
     usr = vk.get_user("763904")
     print(usr)
+
+if __name__ == "__main__":
+    main()
