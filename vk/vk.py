@@ -10,6 +10,55 @@ class VKException(Exception)
     pass
 
 
+class VKUser():
+    """
+    Класс для хранения данных о пользователе VK
+    """
+
+    def __init__(self, id: str, name: str, bdate: str, sex: str, city: str, photos: list):
+        if id == None or id == "":
+            raise VKException(f'VKUser: id пользователя не может быть пустым')
+        if name == None or name == "":
+            raise VKException(f'VKUser: Имя пользователя не может быть пустым')
+        if bdate == None or bdate == "":
+            raise VKException(f'VKUser: Дата рождения пользователя не может быть пустой')
+        if sex == None or sex == "":
+            raise VKException(f'VKUser: Пол пользователя не может быть пустым')
+        if  city == None or city == "":
+            raise VKException(f'VKUser: Город проживания пользователя не может быть пустым')
+        self.__id = id
+        self.__name = name
+        self.__bdate = bdate
+        self.__sex = sex
+        self.__city = city
+        self.__photos = photos
+
+    def __str__(self):
+        return f'VKUser({self.__id}, {self.__name}, {self.__bdate}, {self.__sex}, {self.__city})'
+
+    @property
+    def id(self):
+        return self.__id
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def bdate(self):
+        return self.__bdate
+
+    @property
+    def sex(self):
+        return self.__sex
+    @property
+    def city(self):
+        return self.__city
+
+    @property
+    def photos(self):
+        return self.__photos
+
 class VKConnector:
     """
     Класс для работы с VK
